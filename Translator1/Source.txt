@@ -1,0 +1,17 @@
+   1  program example ( input, output );
+   2  const c = 3;
+   3  b = 56;
+   4  var a : 'a' .. 'c';
+   5  k, i : integer;
+   6  begin
+   7  read ( k, i );
+   8  for a := 'a' to 'c' do
+   9  case a of
+  10  k: i := i * k;
+  11  'b' : i := i + 1;
+  12  i : k := k + 2;
+  13  b: i := i - k;
+  14  c: i := ( i + k ) * 2
+  15  end;
+  16  writeln( i, k )
+  17  end.

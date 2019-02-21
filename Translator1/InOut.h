@@ -15,7 +15,7 @@ struct lineErrors
 } ErrList[ERRMAX];
 char ch;
 textposition positionnow;
-
+short LastInLine;
 char line[MAXLINE];
 ifstream IN(FILENAME);
 ofstream OUT(FILENAME2);
@@ -26,7 +26,7 @@ vector<lineErrors> errLst;
 int errcount = 1;
 void ListThisLine()
 {
-	OUT << line << endl; //!!
+	OUT << line << endl;
 }
 void ImportErrors()
 {
@@ -77,15 +77,33 @@ bool GetErrors()
 	}
 	return 0;
 }
-void nextch()
+void ReadNextLine()
 {
 	IN.getline(line, MAXLINE);
+	LastInLine = strlen(line);
+}
+bool nextch(char &x)
+{
+	if ((!IN.eof() || !(positionnow.charnumber > LastInLine)))
 	{
-		ListThisLine();
-		if (GetErrors()) //an
-			ListErrors();
-		positionnow.linenumber++;
+		if (positionnow.charnumber == LastInLine)
+		{
+			ListThisLine();
+			if (GetErrors()) //an
+				ListErrors();
+			ReadNextLine();
+			positionnow.linenumber++;
+			positionnow.charnumber = 1;
+		}
+		else
+		{
+			positionnow.charnumber++;
+		}
+		x = line[positionnow.charnumber];
+		return 1;
 	}
+	else
+		return 0;
 }
 void error(unsigned errorcode,textposition position)
 {
@@ -105,10 +123,10 @@ void work()
 {
 	ImportErrors();
 	positionnow.linenumber = 1;
-	while (!IN.eof())
-	{
-		cout << 1;
-		nextch();
-	}
+	positionnow.charnumber = 1;
+	ReadNextLine();
 	OUT.close();
+	char next;
+	while (nextch(next))
+		cout << next;
 }
