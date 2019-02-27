@@ -1,31 +1,9 @@
 #pragma once
 #include "Header.h"
 #include "errDesc.h"
-
-struct textposition
-{
-	unsigned linenumber; /*номер строки */
-	unsigned charnumber; /*номер позиции
-						 в строке */
-};
-struct lineErrors
-{
-	struct textposition errorposition;
-	unsigned errorcode;
-} ErrList[ERRMAX];
-char ch;
-textposition positionnow;
-short LastInLine;
-char line[MAXLINE];
-ifstream IN(FILENAME);
-ofstream OUT(FILENAME2);
-ifstream ERIN(FILENAME3);
-short ErrInx;
-short ErrorOverFlow;
-vector<lineErrors> errLst;
-int errcount = 1;
 void ListThisLine()
 {
+	OUT << "  " << setw(2) << setfill('0') << positionnow.linenumber << "  ";
 	OUT << line << endl;
 }
 void ImportErrors()
@@ -53,22 +31,23 @@ void ImportErrors()
 }
 void ListErrors()
 {
-	for each (lineErrors v in errLst)
+	cout << "Line:" << positionnow.linenumber<< ",errors:" << ErrInx << endl;
+	for (int i=1; i<=ErrInx; i++)
 	{
-		if (v.errorposition.linenumber == positionnow.linenumber)
+		//if (v.errorposition.linenumber == positionnow.linenumber)
 		{
 			OUT << "**" << setw(2) << setfill('0') << errcount++; 
 			OUT << "**";
-			for (int i = 1; i < v.errorposition.charnumber; i++)
+			for (int j = 1; j < ErrList[i].errorposition.charnumber; j++)
 				OUT << " ";
-			OUT << "^ ошибка код " << v.errorcode << endl;
-			OUT << "******" << errorDescription[v.errorcode] << endl;
+			OUT << "^ ошибка код " << ErrList[i].errorcode << endl;
+			OUT << "******" << errorDescription[ErrList[i].errorcode] << endl;
 		}
 	}
 }
 bool GetErrors()
 {
-	for each (lineErrors v in errLst)
+	for each (lineErrors v in ErrList)
 	{
 		if (v.errorposition.linenumber == positionnow.linenumber)
 		{
@@ -79,17 +58,19 @@ bool GetErrors()
 }
 void ReadNextLine()
 {
+	memset(&line[0], 0, sizeof(line));
 	IN.getline(line, MAXLINE);
+	line[strlen(line)] = ' ';
 	LastInLine = strlen(line);
+	ErrInx = 0;
 }
-bool nextch(char &x)
+bool nextch() // сканирование следующего символа
 {
-	if ((!IN.eof() || !(positionnow.charnumber > LastInLine)))
 	{
 		if (positionnow.charnumber == LastInLine)
 		{
 			ListThisLine();
-			if (GetErrors()) //an
+			if (ErrInx > 0) //an
 				ListErrors();
 			ReadNextLine();
 			positionnow.linenumber++;
@@ -99,18 +80,18 @@ bool nextch(char &x)
 		{
 			positionnow.charnumber++;
 		}
-		x = line[positionnow.charnumber];
+		ch = line[positionnow.charnumber - 1];
 		return 1;
 	}
-	else
-		return 0;
 }
 void error(unsigned errorcode,textposition position)
 {
-	if (ErrInx = ERRMAX)
+	
+	if (ErrInx == ERRMAX)
 		ErrorOverFlow = 1;
 	else
 	{
+		cout << "Adding an error\nPositionnow:" << position.linenumber << "," << position.charnumber << endl;
 		++ErrInx;
 		ErrList[ErrInx].errorcode = errorcode;
 		ErrList[ErrInx].errorposition.linenumber
@@ -118,15 +99,4 @@ void error(unsigned errorcode,textposition position)
 		ErrList[ErrInx].errorposition.charnumber
 			= position.charnumber;
 	}
-}
-void work()
-{
-	ImportErrors();
-	positionnow.linenumber = 1;
-	positionnow.charnumber = 1;
-	ReadNextLine();
-	OUT.close();
-	char next;
-	while (nextch(next))
-		cout << next;
 }
