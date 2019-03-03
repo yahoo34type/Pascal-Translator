@@ -6,29 +6,6 @@ void ListThisLine()
 	OUT << "  " << setw(2) << setfill('0') << positionnow.linenumber << "  ";
 	OUT << line << endl;
 }
-void ImportErrors()
-{
-	char *s = new char[MAXLINE];
-		string temp1 = "", temp2 = "", temp3 = "";
-	int cur = 0;
-	while (!ERIN.eof())
-	{
-		ERIN.getline(s, MAXLINE);
-		while (s[cur] != ',')
-			temp1 += s[cur++];
-		cur++;
-		while (s[cur] != ',')
-			temp2 += s[cur++];
-		cur++;
-		while (cur < strlen(s))
-			temp3 += s[cur++];
-		textposition t = { stoi(temp1),stoi(temp2) };
-		lineErrors t1 = { t,stoi(temp3) };
-		errLst.push_back(t1);
-		cur = 0;
-		temp1 = ""; temp2 = ""; temp3 = "";
-	}
-}
 void ListErrors()
 {
 	cout << "Line:" << positionnow.linenumber<< ",errors:" << ErrInx << endl;
@@ -44,17 +21,6 @@ void ListErrors()
 			OUT << "******" << errorDescription[ErrList[i].errorcode] << endl;
 		}
 	}
-}
-bool GetErrors()
-{
-	for each (lineErrors v in ErrList)
-	{
-		if (v.errorposition.linenumber == positionnow.linenumber)
-		{
-			return 1;
-		}
-	}
-	return 0;
 }
 void ReadNextLine()
 {
@@ -91,7 +57,7 @@ void error(unsigned errorcode,textposition position)
 		ErrorOverFlow = 1;
 	else
 	{
-		cout << "Adding an error\nPositionnow:" << position.linenumber << "," << position.charnumber << endl;
+		cout << "Adding an error\nPositionnow:" << position.linenumber << "," << position.charnumber << "; errorcode: " << errorcode <<endl;
 		++ErrInx;
 		ErrList[ErrInx].errorcode = errorcode;
 		ErrList[ErrInx].errorposition.linenumber

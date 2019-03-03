@@ -1,0 +1,12 @@
+program example ( output );
+var i, j : real;
+mas : array [ 1 .. 10 ] of char;
+begin i := 1; j := 3.123e48;
+?       $        &
+i := i + ( i*j ) + 100; writeln( i );
+for i := 1 to 10
+if odd ( i )
+then a [ i ] := 'a'
+else a [ i ] := '' ;
+writeln( a[ i ] );
+end.

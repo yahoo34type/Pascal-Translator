@@ -1,15 +1,15 @@
 program example ( input, output );
-const c = 3;
-b = 56;
+const c = -3;
+b = 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000059;
 var a : 'a' .. 'c';
 k, i : integer;
 f : real;
 begin
-read ( k, i );
+read ( k, i ); // program program program
 for a := 'a' to 'c' do
 case a ofadsf  &     $
 k: i := i * k;
-f := 882.14445chudo
+f := -882.1444e11
 '' : i := i + 1;
 i : k := k + 2;
 b: i := i - k;
