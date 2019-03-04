@@ -1,5 +1,4 @@
 #pragma once
-#include "Header.h"
 #include "InOut.h"
 #include "Symbols.h"
 unsigned symbol; /* код символа */
@@ -8,6 +7,7 @@ int nmb_int; /* целая константа */
 long double nmb_float; /* вещественная константа */
 char one_symbol; /* символьная константа */
 char nmb_str[MAX]; /* строковая константа */
+bool nmb_bool;
 unsigned hashresult; /* hash-функция для заданного имени */
 char *addrname; /* адрес имени в таблице имен */
 char name[MAX_IDENT];
@@ -264,8 +264,6 @@ bool nextsym()
 						else
 						{
 							symbol = floatc;
-							//cout << "Number1: " << num << endl;
-							//cout << "Number: " << nmb_float << endl;
 						}
 					}
 					nmb_int = 0;
@@ -291,7 +289,16 @@ bool nextsym()
 					while (strcmp(keywords[i].namekey, name) != 0)
 						i++;
 					symbol = keywords[i].codekey;
-					if (symbol == ident)
+					if (name == "false" || name == "true")
+					{
+						symbol = booleanc;
+						if (name == "false")
+							nmb_bool = false;
+						else
+							nmb_bool = true;
+						cout << "bool value: " << nmb_bool << endl;
+					}
+					else if (symbol == ident)
 					{
 						bool found = 0;
 						for (int i = 0; i < icount && !found; i++)

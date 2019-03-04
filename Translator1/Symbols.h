@@ -29,7 +29,8 @@
 #define intc 15 /* целая константа */
 #define charc 83 /* символьная константа */
 #define stringc 101 /* строковая константа */
-#define olcomment 100
+#define booleanc 102 /* логическая константа */
+#define olcomment 100 /* // */
 #define casesy 31 
 #define elsesy 32 
 #define filesy 57 
