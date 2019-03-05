@@ -49,6 +49,18 @@ void forstatement()
 	expression(); accept(dosy);
 	statement();
 }
+void repeatstatement()
+/* анализ конструкции <цикл с параметром> */
+{
+	accept(repeatsy);
+	statement();
+	while (symbol == semicolon)
+	{
+		nextsym();
+		statement();
+	}
+	accept(untilsy); expression();
+}
 void compoundstatement()
 /* анализ конструкции <составной оператор> */
 {
@@ -102,7 +114,6 @@ void type()
 	case ident: //простой
 		simpletype();
 		break;
-
 	case arraysy: //регулярный
 		unpackedcompositetype();
 		break;
@@ -115,7 +126,6 @@ void type()
 	case filesy: //файловый
 		unpackedcompositetype(); 
 		break;
-
 	case packedsy:	//упакованный
 		nextsym();
 		unpackedcompositetype();
@@ -302,6 +312,33 @@ void ifstatement()
 		statement();
 	}
 }
+void casestatement()
+{
+	accept(casesy);
+	expression();
+	accept(ofsy);
+	caseelement();
+	while (symbol == semicolon)
+	{
+		nextsym();
+		caseelement();
+	}
+	accept(endsy);
+}
+void caseelement()
+{
+	if (symbol != endsy)
+	{
+		constant();
+		while (symbol == comma)
+		{
+			nextsym();
+			constant();
+		}
+		accept(colon);
+		statement();
+	}
+}
 void labelpart()
 /* анализ конструкции <раздел меток> */
 {
@@ -316,4 +353,220 @@ void labelpart()
 		}
 		accept(semicolon);
 	}
+}
+void statementpart()
+/* раздел операторов */
+{
+	accept(beginsy);
+	statement();
+	while (symbol == semicolon)
+	{
+		nextsym();
+		statement();
+	}
+	accept(endsy);
+}
+void statement()
+/* раздел оператора */
+{
+	if (symbol != endsy)
+	{
+		if (symbol == ident)
+		{
+			nextsym();
+			if (symbol == colon)
+			{
+				nextsym();
+				unmarkedstatement();
+			}
+			else 
+			{
+				switch (symbol)
+				{
+				case assign:
+					nextsym();
+					expression();
+					break;
+				case leftpar:
+					nextsym();
+					fparameter();
+					while (symbol == comma)
+					{
+						nextsym();
+						fparameter();
+					}
+					accept(rightpar);
+					break;
+				default:
+					error(322, token);
+					break;
+				}
+			}
+		}
+		else
+		{
+			switch (symbol)
+			{
+			case gotosy:
+				nextsym();
+				accept(ident);
+				break;
+			case ifsy:
+				nextsym();
+				ifstatement();
+				break;
+			case beginsy:
+				nextsym();
+				statement();
+				while (symbol == semicolon)
+				{
+					nextsym();
+					statement();
+				}
+				accept(endsy);
+				break;
+			case casesy:
+				nextsym();
+				casestatement();
+				break;
+			case whilesy:
+				cyclestatement();
+				break;
+			case repeatsy:
+				cyclestatement();
+				break;
+			case forsy:
+				cyclestatement();
+				break;
+			case withsy:
+				connstatement();
+				break;
+			default:
+				error(322, token);
+				break;
+			}
+		}
+	}
+	else
+	{
+		nextsym();
+	}
+}
+void unmarkedstatement()
+/* раздел оператора */
+{
+	if (symbol != endsy)
+	{
+		if (symbol == ident)
+		{
+			nextsym();
+			switch (symbol)
+			{
+			case assign:
+				nextsym();
+				expression();
+				break;
+			case leftpar:
+				nextsym();
+				fparameter();
+				while (symbol == comma)
+				{
+					nextsym();
+					fparameter();
+				}
+				accept(rightpar);
+				break;
+			default:
+				error(322, token);
+				break;
+			}
+		}
+		else
+		{
+			switch (symbol)
+			{
+			case gotosy:
+				nextsym();
+				accept(ident);
+				break;
+			case ifsy:
+				nextsym();
+				ifstatement();
+				break;
+			case beginsy:
+				nextsym();
+				statement();
+				while (symbol == semicolon)
+				{
+					nextsym();
+					statement();
+				}
+				accept(endsy);
+				break;
+			case casesy:
+				nextsym();
+				casestatement();
+				break;
+			case whilesy:
+				cyclestatement();
+				break;
+			case repeatsy:
+				cyclestatement();
+				break;
+			case forsy:
+				cyclestatement();
+				break;
+			case withsy:
+				connstatement();
+				break;
+			default:
+				error(322, token);
+				break;
+			}
+		}
+	}
+	else
+	{
+		nextsym();
+	}
+}
+void fparameter()
+{
+	if (symbol == ident)
+		nextsym();
+	else
+		expression();
+}
+void connstatement()
+{
+	accept(withsy);
+	variable();
+	while (symbol == comma)
+	{
+		nextsym();
+		variable();
+	}
+	accept(dosy);
+	statement();
+}
+void cyclestatement()
+{
+	switch (symbol)
+	{
+	case forsy:
+		forstatement();
+		break;
+	case repeatsy:
+		repeatstatement();
+		break;
+	case whilesy:
+		whilestatement();
+		break;
+	}
+}
+void expression()
+{
+	if (symbol == minus)
+		nextsym();
+
 }
