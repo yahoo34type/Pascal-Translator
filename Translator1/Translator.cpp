@@ -1,4 +1,4 @@
-#include "Syntax.h"
+#include "Lexical.h"
 void main()
 {
 	positionnow.linenumber = 1;

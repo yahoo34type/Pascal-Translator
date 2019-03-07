@@ -566,7 +566,128 @@ void cyclestatement()
 }
 void expression()
 {
-	if (symbol == minus)
+	simpleexpression();
+	if (symbol == equal || symbol == latergreater || symbol == later || symbol == laterequal || symbol == greaterequal ||
+		symbol == greater || symbol == insy)
+	{
 		nextsym();
-
+		simpleexpression();
+	}
+}
+void simpleexpression()
+{
+	if (symbol == minus || symbol == plus)
+		nextsym();
+	addend();
+	while (symbol == plus || symbol == minus || symbol == orsy)
+	{
+		nextsym();
+		addend();
+	}
+}
+void addend()
+{
+	mult();
+	while (symbol == star || symbol == slash || symbol == divsy || symbol == modsy || symbol == andsy)
+	{
+		nextsym();
+		mult();
+	}
+}
+void mult()
+{
+	switch (symbol)
+	{
+	case ident:
+		nextsym();
+		if (symbol == leftpar)
+		{
+			nextsym();
+			if (symbol == ident)
+			{
+				nextsym();
+				while (symbol == comma)
+				{
+					nextsym();
+					if (symbol == ident)
+					{
+						nextsym();
+					}
+					else
+					{
+						expression();
+					}
+				}
+			}
+			else
+			{
+				expression();
+				while (symbol == comma)
+				{
+					nextsym();
+					if (symbol == ident)
+					{
+						nextsym();
+					}
+					else
+					{
+						expression();
+					}
+				}
+			}
+			accept(rightpar);
+		}
+		break;
+	case intc:
+		if (nmb_int >= 0)
+		{
+			nextsym();
+			accept(leftpar);
+			expression();
+			accept(rightpar);
+		}
+		else
+		{
+			error(50, token);
+		}
+		break;
+	case stringc:
+		nextsym();
+		accept(leftpar);
+		expression();
+		accept(rightpar);
+		break;
+	case charc:
+		nextsym();
+		accept(leftpar);
+		expression();
+		accept(rightpar);
+		break;
+	case nilsy:
+		nextsym();
+		accept(leftpar);
+		expression();
+		accept(rightpar);
+		break;
+	case lbracket:
+		nextsym();
+		expression();
+		if (symbol == twopoints)
+			expression();
+		while (symbol == comma)
+		{
+			nextsym();
+			expression();
+			if (symbol == twopoints)
+				expression();
+		}
+		accept(rbracket);
+		break;
+	case notsy:
+		nextsym();
+		mult();
+		break;
+	default:
+		error(322, token);
+	}
 }

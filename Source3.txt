@@ -1,6 +1,14 @@
 program example ( input, output );
 const c = 3;
 b = 56;
+&
+32768
+23456789
+-12345689
+&
+12312.243e+10
+(* adfhga (* shfgdh *)
+&
 var a : 'a' .. 'c';
 k, i : integer;
 f : real;
@@ -9,8 +17,9 @@ read ( k, i );
 for a := 'a' to 'c' do
 case a ofadsf  &     $
 k: i := i * k;
-f := 882.14445
-'' : i := i + 1;
+f := 882.14445chudfs
+' : i := i + 1;
+(*
 i : k := k + 2;
 b: i := i - k;
 c: i := ( i + k ) * 2

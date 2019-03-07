@@ -344,6 +344,7 @@ bool nextsym()
 					symbol = rcomment;
 					nextch();
 					rcommentfound = 1;
+					lcommentfound = 0;
 				}
 			}
 			if (!IN.eof() || positionnow.charnumber != LastInLine)
