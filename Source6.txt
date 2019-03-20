@@ -1,0 +1,37 @@
+program OMEGALUL;
+var
+ d0 , l0,N,h,li,Pi,g,K,S,Pii,Lii,yi,xi,xcp,ycp: integer;
+ a: array [1..10] of interger;
+ begin
+ write ('Enter d0: ');
+ readln (d0);
+ write ('Enterl0: ');
+ readln (l0);
+ write ('Enter N: ');
+ readln (N);
+ write ('Enter h: ');
+ readln (h);
+ write (' Enter K: ');
+ readln (K);
+ g :=1 ;
+ Pii :=0;
+ lii :=0;
+ li := 0;
+ Pi := 0;
+ repeat
+  write ('Enter Pi: ');
+ readln (Pi);
+ write ('Enter li: ');
+ readln (li);
+ g := g + 1;
+ yi := (h *Pi)/F0;
+ xi := sqrt(li/l0);
+ xcp := (1/N);
+ Pii := Pi + Pi;
+ Lii := li+li;
+ 
+ until g > K;
+write (' summ Pi: ', Pii );
+write (' summ li: ', Lii );
+readln
+ end.

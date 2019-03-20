@@ -1,0 +1,90 @@
+program longarif;
+type TLong=array[1..255] of integer;{массив из цифр числа справа-налево  }
+var s,s1,s2,ss1,ss2:string;
+  m,m1,m2,mt:TLong;
+i,j,n1,n2,a1,k1,a2,k2,kol:integer;
+b:boolean;
+f:text;
+function perev(s:string):string;{переворачиваем строку чтобы проще было }
+var s1:string;
+i,j:integer;
+begin
+s1:=s;
+j:=0;
+for i:=length(s) downto 1 do
+   begin
+    j:=j+1;
+     s1[j]:=s[i];
+   end;
+ perev:=s1;
+end;
+procedure minus(m1,m2:TLong;n1:integer;var m:TLong);{вычитание как в столбик}
+var i,j:integer;
+bb:boolean;
+begin
+for i:=1 to n1 do{идем по массиву}
+begin
+if m2[i]<=m1[i] then m[i]:=m1[i]-m2[i] else{если вычитаемая меньше -вычитаем}
+ begin 
+ bb:=false;
+ for j:=i+1 to n1 do if m1[j]<>0 then bb:=true;{проверяем что есть еще цифры}
+ if bb then begin m1[i+1]:=m1[i+1]-1;m[i]:=10+m1[i]-m2[i];end{берем десяток и вычитаем}
+ else b:=true;{конец вычитания}
+end;  
+end;
+end;
+procedure vyvod(a:tlong;n:integer);
+var i:integer;
+begin
+ for i:=n downto 1 do write(a[i]);
+ writeln;
+end;
+begin
+assign(f,'3.txt');
+reset(f);
+readln(f,s1);{считали из файла}
+readln(f,s2);
+ 
+close(f);
+ss1:=perev(s1);{перевернули строки}
+ss2:=perev(s2);
+n1:=length(ss1);{вычислили размер}
+n2:=length(ss2);
+for i:=1 to n1 do{заполнили доп. массивы 0}
+    begin
+     m1[i]:=0;
+     m2[i]:=0;
+     m[i]:=0;
+     mt[i]:=0;
+    end;
+    for i:=1 to n1 do{заполнили массивы числами}
+begin
+   val(ss1[i],a1,k1);
+   m1[i]:=a1;
+ end;
+for i:=1 to n2 do
+begin
+   val(ss2[i],a2,k2);
+   m2[i]:=a2;
+ end;
+ write(' 1 chislo = ');
+ vyvod(m1,n1);
+ write(' 2 chislo = ');
+  vyvod(m2,n2);
+ b:=false;
+ kol:=0;
+ repeat{деление - т е повторение вычитания}
+     minus(m1,m2,n1,m);{вычли}
+    for i:=1 to n1 do mt[i]:=m1[i];{сохранили в доп массив остаток}
+    for i:=1 to n1 do m1[i]:=m[i];{переписили остато в исходный}
+     for i:=1 to n1 do m[i]:=0;{обнулили дополнительный}
+    kol:=kol+1;{кол-во вычитаний}
+until b;
+writeln('chelaya chast =',kol-1);
+ write('ostatok = '); 
+ for i:=1 to n1 do if mt[i]=0 then j:=i;{нашли последний 0}
+ if j>1 then begin j:=j-1;
+vyvod(mt,j);
+ end else writeln('= 0');
+readln;
+end.

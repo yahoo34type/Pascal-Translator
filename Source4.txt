@@ -7,8 +7,8 @@ readln ( M, N );
 while M <> N do
 begin
 if M>N
-then M := M-N
+then M := M - N
 else N := N - M
 end;
-write ('мнд=', M )
+write ('мнд=' , M )
 end.

@@ -16,14 +16,19 @@ bool lcommentfound = false;
 char **nlist = new char*;
 int n = 0;
 int len = 0;
-bool negativeflag = false;
-char* add(char* e)
-{
-	nlist[n++] = e;
-	return nlist[n];
-}
+bool negativeflag = false; bool tpflg = false;
 bool nextsym()
 {
+	if (tpflg)
+	{
+		token.charnumber = positionnow.charnumber - 1;
+		token.linenumber = positionnow.linenumber;
+		symbol = twopoints;
+		tpflg = false;
+		nextch();
+	}
+	else
+	{
 	if (!lcommentfound)
 		if (!IN.eof() || positionnow.charnumber != LastInLine)
 		{
@@ -91,19 +96,19 @@ bool nextsym()
 				break;
 			case '?':
 				error(6, positionnow);
-				nextch();
+				nextch(); nextsym();
 				break;
 			case '&':
 				error(6, positionnow);
-				nextch();
+				nextch(); nextsym();
 				break;
 			case '%':
 				error(6, positionnow);
-				nextch();
+				nextch(); nextsym();
 				break;
 			case '$':
 				error(6, positionnow);
-				nextch();
+				nextch(); nextsym();
 				break;
 			case ':': nextch(); //+
 				if (ch == '=')
@@ -116,14 +121,16 @@ bool nextsym()
 			case '+': symbol = plus; //+
 				nextch();
 				break;
-			case '-': nextch(); 
-				if (ch == ' ')
-					symbol = minus;//+
+			case '-': symbol = minus; nextch();
+				/*if (ch >= '0' && ch <= '9')
+				{
+					negativeflag = true;
+					nextsym();
+				}
 				else
 				{
-					if (ch >= '0' && ch <= '9')
-						negativeflag = true;
-				}
+					symbol = minus;
+				}*/
 				break;
 			case '*': nextch(); //+
 				if (ch == ')')
@@ -141,6 +148,7 @@ bool nextsym()
 					int cn = positionnow.linenumber;
 					while (positionnow.linenumber == cn)
 						nextch();
+					nextsym();
 				}
 				else
 				{
@@ -156,6 +164,7 @@ bool nextsym()
 					symbol = lcomment;
 					nextch();
 					lcommentfound = true;
+					nextsym();
 				}
 				else
 					symbol = leftpar;
@@ -163,15 +172,16 @@ bool nextsym()
 			case ')': symbol = rightpar;//+
 				nextch();
 				break;
-			case '{': symbol = flpar;//+
+			case '{': symbol = flpar; //+
 				while (ch != '}' && (!IN.eof() || positionnow.charnumber != LastInLine))
 					nextch();
 				if (IN.eof() && positionnow.charnumber == LastInLine)
 					error(86, positionnow);
-
+				nextsym();
 				break;
 			case '}': symbol = frpar;//+
 				nextch();
+				nextsym();
 				break;
 			case '[': symbol = lbracket;//+
 				nextch();
@@ -201,7 +211,7 @@ bool nextsym()
 				if (ch >= '0' && ch <= '9')
 				{
 					bool pfound = false;
-					bool efound = false; bool ejustfound = false;
+					bool efound = false; bool ejustfound = false; bool pjustfound = false;
 					bool errflag = false;
 					string num = "";
 					while (ch >= '0' && ch <= '9' || ch == '.' && !(pfound) || ch == 'e' && !(efound) || ch == '-' && ejustfound || ch == '+' && ejustfound)
@@ -210,15 +220,18 @@ bool nextsym()
 						num += ch;
 						if (ch == '.' && !(pfound))
 						{
-							pfound = true;
+							pfound = true; pjustfound = true;
 						}
 						else if (ch == 'e' && !(efound))
 						{
 							efound = true;
 							ejustfound = true;
+							pjustfound = false;
 						}
 						else if (ch == '-' && ejustfound || ch == '+' && ejustfound)
-							ejustfound = false;
+						{
+							ejustfound = false; pjustfound = false;
+						}
 						if (!efound && !pfound)
 						{
 							int digit = ch - '0';
@@ -230,14 +243,23 @@ bool nextsym()
 								nmb_int = 0;
 							}
 							ejustfound = false;
+							pjustfound = false;
 						}
 						nextch();
 					}
-					if (ch != ' ' && ch != ';')
+					if (pjustfound && ch == '.')
+					{
+						nmb_int = stoi(num);
+						symbol = intc;
+						tpflg = true;
+						cout << "Number: " << nmb_int << endl;
+					}
+					/*if (ch != ' ' && ch != ';')
 					{
 						error(1, positionnow); nextch();
-					}
-					else if (!pfound && !efound)
+					}*/
+					else
+					if (!pfound && !efound)
 					{
 						symbol = intc;
 						if (errflag)
@@ -247,29 +269,24 @@ bool nextsym()
 						else
 						{
 							if (negativeflag)
-								nmb_int = (-1) * stoi(num);
+								nmb_int = stoi(num);
 							cout << "Number: " << nmb_int << endl;
 						}
 					}
 					else
 					{
-						if (negativeflag)
-						{
-							nmb_float = (-1) * stold(num);
-						}
-						else
-							nmb_float = stold(num);
+						nmb_float = stold(num);
 						if (nmb_float > 0 && nmb_float < 1.5e-45 || nmb_float > 3.4e38 || nmb_float < 0 && nmb_float > -1.5e-45 || nmb_float < -3.4e38)
 							error(50, positionnow);
 						else
 						{
 							symbol = floatc;
+							cout << "Num: " << nmb_float << endl;
 						}
 					}
 					nmb_int = 0;
 					nmb_float = 0;
 					num = "";
-					nextch();
 					negativeflag = false;
 				}
 				else if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'))
@@ -345,6 +362,7 @@ bool nextsym()
 					nextch();
 					rcommentfound = 1;
 					lcommentfound = 0;
+					nextsym();
 				}
 			}
 			if (!IN.eof() || positionnow.charnumber != LastInLine)
@@ -361,5 +379,6 @@ bool nextsym()
 			return 0;
 		}
 	}
-
+	cout << symbol << " in position " << token.linenumber << "," << token.charnumber << "\n";
+}
 }

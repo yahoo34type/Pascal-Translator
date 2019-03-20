@@ -1,13 +1,24 @@
-#include "Lexical.h"
+#include "Syntax.h"
+void syntax()
+{
+	nextsym();
+	programme();
+	while (positionnow.charnumber != LastInLine)
+		nextch();
+}
+void lexic()
+{
+	while (nextsym())
+	cout << symbol << " in position " << token.linenumber << "," << token.charnumber << "\n";
+}
 void main()
 {
 	positionnow.linenumber = 1;
 	positionnow.charnumber = 0;
 	ReadNextLine();
 	nextch();
-	int y = 0;
-	while (nextsym())
-		cout << symbol << " in position " << token.linenumber << "," << token.charnumber << "\n";
+	syntax();
+	//lexic();
 	nextch();
 	OUT.close(); cout << endl;
 }

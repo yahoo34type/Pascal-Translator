@@ -1,0 +1,36 @@
+program AB;
+
+var
+   f1,f2:text;
+   s1:string;
+   b,i,c:integer;
+   a:array[0..105] of integer;
+begin
+   Assign(f1,'INPUT.TXT');  Reset(f1);
+   Assign(f2,'OUTPUT.TXT'); ReWrite(f2);
+   c:=0;
+   ReadLn(f1,s1);
+   ReadLn(f1,b);
+   close(f1);
+   a[0]:=length(s1);
+   for i:=1 to a[0] do
+      a[a[0]-i+1]:=Ord(s1[i])-48;
+
+   for i:=1 to a[0] do
+    begin
+      a[i]:=c+a[i]*b;
+      c:=a[i] div 10;
+      a[i]:=a[i] mod 10;
+    end;
+   while c>0 do
+   begin
+      a[0]:=a[0]+1;
+      a[a[0]]:=c mod 10;
+      c:=c div 10;
+   end;
+   if a[a[0]]=0 then Write(f2,0)
+   else
+   for i:=a[0] downto 1 do
+    Write(f2,a[i]);
+   close(f2);
+end.

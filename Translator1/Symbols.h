@@ -31,41 +31,64 @@
 #define stringc 101 /* строковая константа */
 #define booleanc 102 /* логическая константа */
 #define olcomment 100 /* // */
-#define casesy 31 
-#define elsesy 32 
-#define filesy 57 
-#define gotosy 33 
-#define thensy 52 
-#define typesy 34 
-#define untilsy 53 
-#define dosy 54 
-#define withsy 37 
-#define ofsy 75 
-#define orsy 76 
-#define insy 77 
-#define ifsy 44 
-#define tosy 78 
-#define endsy 79 
-#define varsy 80 
-#define divsy 81 
-#define andsy 42 
-#define notsy 43 
-#define forsy 84 
-#define modsy 85 
-#define nilsy 86 
-#define setsy 87 
-#define beginsy 88 
-#define whilesy 89 
-#define arraysy 90 
-#define constsy 91 
-#define labelsy 92 
-#define downtosy 93 
-#define packedsy 94 
-#define recordsy 95 
-#define repeatsy 96 
-#define programsy 97 
-#define functionsy 98 
-#define proceduresy 99 
+/*  список  ключевых  слов  */
+#define   dosy           54
+#define   ifsy           56
+#define   insy           22
+#define   ofsy            8
+#define   orsy           23           /* разделитель  !   */
+#define   tosy           55
+
+/* ключевые  слова  длины  2 */
+
+#define   andsy          24            /* разделитель   &  */
+#define   divsy          25
+#define   endsy          13
+#define   forsy          26
+#define   modsy          27
+#define   nilsy          89
+#define   notsy          28
+#define   setsy          29
+#define   varsy          30
+
+/*  ключевые  слова  длины  3 */
+
+#define   casesy         31
+#define   elsesy         32
+#define   filesy         57
+#define   gotosy         33
+#define   thensy         52
+#define   typesy         34
+#define   withsy         37
+
+/*  ключевые  слова   длины 4 */
+
+#define   arraysy        38
+#define   beginsy        17
+#define   constsy        39
+#define   labelsy        40
+#define   untilsy        53
+#define   whilesy        41
+
+/*  ключевые  слова   длины  5 */
+
+#define   downtosy        55
+#define   packedsy        42
+#define   recordsy        43
+#define   repeatsy        44
+
+/*  ключевые  слова    длины 6 */
+
+#define   programsy        3
+
+/*  ключевые  слова    длины 7 */
+
+#define   functionsy      77
+
+/*  ключевые  слова    длины 8 */
+
+#define  proceduresy      80
+
 struct key
 {
 	unsigned codekey;

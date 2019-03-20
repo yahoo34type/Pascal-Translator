@@ -1,50 +1,90 @@
-  01  program example ( input, output ); 
-  02  const c = 3; 
-  03  b = 56; 
-  04  & 
-**01**^ ошибка код 6
-****** запрещенный символ
-  05  32768 
-**02**     ^ ошибка код 203
-****** целая константа превышает предел
-  06  23456789 
-**03**        ^ ошибка код 203
-****** целая константа превышает предел
-  07  -12345689 
-**04**         ^ ошибка код 203
-****** целая константа превышает предел
-  08  & 
-**05**^ ошибка код 6
-****** запрещенный символ
-  09  12312.243e+10 
-  10  (* adfhga (* shfgdh *) 
-  11  & 
-**06**^ ошибка код 6
-****** запрещенный символ
-  12  var a : 'a' .. 'c'; 
-  13  k, i : integer; 
-  14  f : real; 
-  15  begin 
-  16  read ( k, i ); 
-  17  for a := 'a' to 'c' do 
-  18  case a ofadsf  &     $ 
-**07**               ^ ошибка код 6
-****** запрещенный символ
-**08**                     ^ ошибка код 6
-****** запрещенный символ
-  19  k: i := i * k; 
-  20  f := 882.14445chudfs 
-**09**              ^ ошибка код 1
-****** ошибка в простом типе
-  21  ' : i := i + 1; 
-**10**               ^ ошибка код 76
-****** слишком длинная строковая константа
-  22  (* 
-  23  i : k := k + 2; 
-  24  b: i := i - k; 
-  25  c: i := ( i + k ) * 2 
-  26  end; 
-  27  writeln( i, k ) 
-  28  end. 
-**11**    ^ ошибка код 86
-****** комментарий не закрыт
+  01  program longarif; 
+  02  type TLong=array[1..255] of integer;{массив из цифр числа справа-налево  } 
+  03  var s,s1,s2,ss1,ss2:string; 
+  04    m,m1,m2,mt:TLong; 
+  05  i,j,n1,n2,a1,k1,a2,k2,kol:integer; 
+  06  b:boolean; 
+  07  f:text; 
+  08  function perev(s:string):string;{переворачиваем строку чтобы проще было } 
+  09  var s1:string; 
+  10  i,j:integer; 
+  11  begin 
+  12  s1:=s; 
+  13  j:=0; 
+  14  for i:=length(s) downto 1 do 
+  15     begin 
+  16      j:=j+1; 
+  17       s1[j]:=s[i]; 
+  18     end; 
+  19   perev:=s1; 
+  20  end; 
+  21  procedure minus(m1,m2:TLong;n1:integer;var m:TLong);{вычитание как в столбик} 
+  22  var i,j:integer; 
+  23  bb:boolean; 
+  24  begin 
+  25  for i:=1 to n1 do{идем по массиву} 
+  26  begin 
+  27  if m2[i]<=m1[i] then m[i]:=m1[i]-m2[i] else{если вычитаемая меньше -вычитаем} 
+  28   begin  
+  29   bb:=false; 
+  30   for j:=i+1 to n1 do if m1[j]<>0 then bb:=true;{проверяем что есть еще цифры} 
+  31   if bb then begin m1[i+1]:=m1[i+1]-1;m[i]:=10+m1[i]-m2[i];end{берем десяток и вычитаем} 
+  32   else b:=true;{конец вычитания} 
+  33  end;   
+  34  end; 
+  35  end; 
+  36  procedure vyvod(a:tlong;n:integer); 
+  37  var i:integer; 
+  38  begin 
+  39   for i:=n downto 1 do write(a[i]); 
+  40   writeln; 
+  41  end; 
+  42  begin 
+  43  assign(f,'3.txt'); 
+  44  reset(f); 
+  45  readln(f,s1);{считали из файла} 
+  46  readln(f,s2); 
+  47    
+  48  close(f); 
+  49  ss1:=perev(s1);{перевернули строки} 
+  50  ss2:=perev(s2); 
+  51  n1:=length(ss1);{вычислили размер} 
+  52  n2:=length(ss2); 
+  53  for i:=1 to n1 do{заполнили доп. массивы 0} 
+  54      begin 
+  55       m1[i]:=0; 
+  56       m2[i]:=0; 
+  57       m[i]:=0; 
+  58       mt[i]:=0; 
+  59      end; 
+  60      for i:=1 to n1 do{заполнили массивы числами} 
+  61  begin 
+  62     val(ss1[i],a1,k1); 
+  63     m1[i]:=a1; 
+  64   end; 
+  65  for i:=1 to n2 do 
+  66  begin 
+  67     val(ss2[i],a2,k2); 
+  68     m2[i]:=a2; 
+  69   end; 
+  70   write(' 1 chislo = '); 
+  71   vyvod(m1,n1); 
+  72   write(' 2 chislo = '); 
+  73    vyvod(m2,n2); 
+  74   b:=false; 
+  75   kol:=0; 
+  76   repeat{деление - т е повторение вычитания} 
+  77       minus(m1,m2,n1,m);{вычли} 
+  78      for i:=1 to n1 do mt[i]:=m1[i];{сохранили в доп массив остаток} 
+  79      for i:=1 to n1 do m1[i]:=m[i];{переписили остато в исходный} 
+  80       for i:=1 to n1 do m[i]:=0;{обнулили дополнительный} 
+  81      kol:=kol+1;{кол-во вычитаний} 
+  82  until b; 
+  83  writeln('chelaya chast =',kol-1); 
+  84   write('ostatok = ');  
+  85   for i:=1 to n1 do if mt[i]=0 then j:=i;{нашли последний 0} 
+  86   if j>1 then begin j:=j-1; 
+  87  vyvod(mt,j); 
+  88   end else writeln('= 0'); 
+  89  readln; 
+  90  end. 

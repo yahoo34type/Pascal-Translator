@@ -1,37 +1,117 @@
 #pragma once
 #include "Lexical.h"
+#include "Syntaxh.h"
+bool ff = false;
+void idknextsym()
+{
+	nextsym();
+}
 void accept(unsigned symbolexpected
 /* код ожидаемого символа */)
 {
+	cout << "Waiting: " << symbolexpected << ", Symbol: " << symbol << endl;
 	if (symbol == symbolexpected)
+	{
 		nextsym();
-	else error(symbolexpected, token);
+	}
+	else { error(symbolexpected, token); idknextsym(); }
+}
+void block()
+/* анализ конструкции <блок> */
+{
+	labelpart();
+	constpart();
+	typepart();
+	varpart();
+	procfuncpart();
+	statementpart();
 }
 void programme()
 /* анализ конструкции <программа> */
 {
 	accept(programsy);
 	accept(ident);
+	if (symbol == leftpar)
+	{
+		accept(leftpar);
+		accept(ident);
+		while (symbol == comma)
+		{
+			accept(comma);
+			accept(ident);
+		}
+		accept(rightpar);
+	}
 	accept(semicolon);
 	block(); /* анализ конструкции <блок> */
 	accept(point);
 }
-void block()
-/* анализ конструкции <блок> */
-{
-	labelpart(); 
-	constpart();
-	typepart(); 
-	varpart();
-	procfuncpart(); 
-	statementpart();
-}
 void constant()
 {
-	if (symbol == intc || symbol == charc || symbol == floatc || symbol == stringc || symbol == booleanc)
-		nextsym();
+	if (symbol == intc || symbol == charc || symbol == floatc || symbol == stringc || symbol == booleanc || symbol == minus || symbol == plus || symbol == ident)
+	{
+		switch (symbol)
+		{
+		case intc:
+			accept(intc);
+			break;
+		case charc:
+			accept(charc);
+			break;
+		case floatc:
+			accept(floatc);
+			break;
+		case stringc:
+			accept(stringc);
+			break;
+		case booleanc:
+			accept(booleanc);
+			break;
+		case minus:
+			accept(minus);
+			if (symbol == intc || symbol == floatc || symbol == ident)
+			{
+				switch (symbol)
+				{
+				case intc:
+					accept(intc);
+					break;
+				case floatc:
+					accept(floatc);
+					break;
+				case ident:
+					accept(ident);
+					break;
+				}
+			}
+			break;
+		case plus:
+			accept(plus);
+			if (symbol == intc || symbol == floatc || symbol == ident)
+			{
+				switch (symbol)
+				{
+				case intc:
+					accept(intc);
+					break;
+				case floatc:
+					accept(floatc);
+					break;
+				case ident:
+					accept(ident);
+					break;
+				}
+			}
+			break;
+		case ident:
+			accept(ident);
+			break;
+		}
+	}
 	else
-		error(50, token);
+	{
+		error(50, token); idknextsym();
+	}
 }
 void whilestatement()
 /* анализ конструкции <цикл с предусловием> */
@@ -45,8 +125,14 @@ void forstatement()
 	accept(forsy); accept(ident);
 	accept(assign); expression();
 	if (symbol == tosy || symbol == downtosy)
-		nextsym();
-	expression(); accept(dosy);
+	{
+		if (symbol == tosy)
+			accept(tosy);
+		else
+			accept(downtosy);
+	}
+	expression(); 
+	accept(dosy);
 	statement();
 }
 void repeatstatement()
@@ -56,7 +142,7 @@ void repeatstatement()
 	statement();
 	while (symbol == semicolon)
 	{
-		nextsym();
+		accept(semicolon);
 		statement();
 	}
 	accept(untilsy); expression();
@@ -67,7 +153,7 @@ void compoundstatement()
 	accept(beginsy); statement();
 	while (symbol == semicolon)
 	{
-		nextsym(); statement();
+		accept(semicolon); statement();
 	}
 	accept(endsy);
 }
@@ -91,7 +177,7 @@ void vardeclaration()
 	accept(ident);
 	while (symbol == comma)
 	{
-		nextsym();
+		accept(comma);
 		accept(ident);
 	}
 	accept(colon);
@@ -127,31 +213,36 @@ void type()
 		unpackedcompositetype(); 
 		break;
 	case packedsy:	//упакованный
-		nextsym();
+		accept(packedsy);
 		unpackedcompositetype();
 		break;
 	case arrow:	//ссылочный
-		nextsym();
+		accept(arrow);
 		accept(ident);
 		break;
 	default:
 		error(10, token);
+		idknextsym();
 	}
 }
 void simpletype()
 {
+
 	switch (symbol)
 	{
 	case leftpar: //перечисляемый
 		numtype();
 		break;
 	case intc:	//ограниченный
+		accept(intc);
 		limtype(1);
 		break;
 	case charc:	//ограниченный
+		accept(charc);
 		limtype(0);
 		break;
 	case ident: //простой
+		accept(ident);
 		break;
 	}
 }
@@ -174,24 +265,23 @@ void unpackedcompositetype()
 }
 void numtype()
 {
-	nextsym();
+	accept(leftpar);
 	accept(ident);
 	while (symbol == comma)
 	{
-		nextsym();
+		accept(comma);
 		accept(ident);
 	}
 	accept(rightpar);
 }
 void multipletype()
 {
-	nextsym();
+	accept(setsy);
 	accept(ofsy);
 	simpletype();
 }
 void limtype(bool flag)
 {
-	nextsym();
 	accept(twopoints);
 	if (flag)
 		accept(intc);
@@ -200,7 +290,7 @@ void limtype(bool flag)
 }
 void regtype()
 {
-	nextsym();
+	accept(arraysy);
 	accept(lbracket);
 	simpletype();
 	while (symbol == comma)
@@ -214,7 +304,7 @@ void regtype()
 }
 void combtype()
 {
-	nextsym();
+	accept(recordsy);
 	fieldlist();
 	accept(endsy);
 }
@@ -225,7 +315,7 @@ void fieldlist()
 		recordsection();
 		while (symbol == semicolon)
 		{
-			nextsym();
+			accept(semicolon);
 			recordsection();
 		}
 		if (symbol == casesy)
@@ -242,7 +332,7 @@ void fieldlist()
 }
 void variativesection()
 {
-	nextsym();
+	accept(casesy);
 	accept(ident);
 	accept(colon);
 	accept(ident);
@@ -250,7 +340,7 @@ void variativesection()
 	variant();
 	while (symbol == semicolon)
 	{
-		nextsym();
+		accept(semicolon);
 		variant();
 	}
 }
@@ -259,7 +349,7 @@ void variant()
 	constant();
 	while (symbol == comma)
 	{
-		nextsym();
+		accept(comma);
 		constant();
 	}
 	accept(colon);
@@ -272,7 +362,7 @@ void recordsection()
 	accept(ident);
 	while (symbol == comma)
 	{
-		nextsym();
+		accept(comma);
 		accept(ident);
 	}
 	accept(colon);
@@ -281,23 +371,22 @@ void variable()
 /* анализ конструкции <переменная> */
 {
 	accept(ident);
-	while (symbol == lbracket || symbol == point
-		|| symbol == arrow)
+	while (symbol == lbracket || symbol == point || symbol == arrow)
 		switch (symbol)
 		{
 		case lbracket:
-			nextsym(); expression();
+			accept(lbracket); expression();
 			while (symbol == comma)
 			{
-				nextsym(); expression();
+				accept(comma); expression();
 			}
 			accept(rbracket);
 			break;
 		case point:
-			nextsym(); accept(ident);
+			accept(point); accept(ident);
 			break;
 		case arrow:
-			nextsym();
+			accept(arrow);
 			break;
 		}
 }
@@ -308,7 +397,7 @@ void ifstatement()
 	accept(thensy); statement();
 	if (symbol == elsesy)
 	{
-		nextsym();
+		accept(elsesy);
 		statement();
 	}
 }
@@ -320,7 +409,7 @@ void casestatement()
 	caseelement();
 	while (symbol == semicolon)
 	{
-		nextsym();
+		accept(semicolon);
 		caseelement();
 	}
 	accept(endsy);
@@ -332,7 +421,7 @@ void caseelement()
 		constant();
 		while (symbol == comma)
 		{
-			nextsym();
+			accept(comma);
 			constant();
 		}
 		accept(colon);
@@ -344,11 +433,11 @@ void labelpart()
 {
 	if (symbol == labelsy)
 	{
-		nextsym();
+		accept(labelsy);
 		accept(ident);
 		while (symbol == comma)
 		{
-			nextsym();
+			accept(comma);
 			accept(ident);
 		}
 		accept(semicolon);
@@ -361,8 +450,9 @@ void statementpart()
 	statement();
 	while (symbol == semicolon)
 	{
-		nextsym();
-		statement();
+		accept(semicolon);
+		if (symbol != endsy)
+			statement();
 	}
 	accept(endsy);
 }
@@ -373,10 +463,28 @@ void statement()
 	{
 		if (symbol == ident)
 		{
-			nextsym();
+			accept(ident);
+			while (symbol == lbracket || symbol == point || symbol == arrow)
+				switch (symbol)
+				{
+				case lbracket:
+					accept(lbracket); expression();
+					while (symbol == comma)
+					{
+						accept(comma); expression();
+					}
+					accept(rbracket);
+					break;
+				case point:
+					accept(point); accept(ident);
+					break;
+				case arrow:
+					accept(arrow);
+					break;
+				}
 			if (symbol == colon)
 			{
-				nextsym();
+				accept(colon);
 				unmarkedstatement();
 			}
 			else 
@@ -384,21 +492,18 @@ void statement()
 				switch (symbol)
 				{
 				case assign:
-					nextsym();
+					accept(assign);
 					expression();
 					break;
 				case leftpar:
-					nextsym();
-					fparameter();
+					accept(leftpar);
+					factparameter();
 					while (symbol == comma)
 					{
-						nextsym();
-						fparameter();
+						accept(comma);
+						factparameter();
 					}
 					accept(rightpar);
-					break;
-				default:
-					error(322, token);
 					break;
 				}
 			}
@@ -408,25 +513,28 @@ void statement()
 			switch (symbol)
 			{
 			case gotosy:
-				nextsym();
+				accept(gotosy);
 				accept(ident);
 				break;
 			case ifsy:
-				nextsym();
 				ifstatement();
 				break;
 			case beginsy:
-				nextsym();
+				accept(beginsy);
 				statement();
-				while (symbol == semicolon)
+				ff = (symbol == endsy);
+				while (symbol == semicolon && !ff)
 				{
-					nextsym();
-					statement();
+					accept(semicolon);
+					if (symbol != endsy)
+					{
+						statement();
+					}						
+					ff = (symbol == endsy);
 				}
 				accept(endsy);
 				break;
 			case casesy:
-				nextsym();
 				casestatement();
 				break;
 			case whilesy:
@@ -441,9 +549,9 @@ void statement()
 			case withsy:
 				connstatement();
 				break;
-			default:
-				error(322, token);
-				break;
+			/*default:
+				error(322, token); idknextsym();
+				break;*/
 			}
 		}
 	}
@@ -459,25 +567,25 @@ void unmarkedstatement()
 	{
 		if (symbol == ident)
 		{
-			nextsym();
+			accept(ident);
 			switch (symbol)
 			{
 			case assign:
-				nextsym();
+				accept(assign);
 				expression();
 				break;
 			case leftpar:
-				nextsym();
-				fparameter();
+				accept(leftpar);
+				factparameter();
 				while (symbol == comma)
 				{
-					nextsym();
-					fparameter();
+					accept(comma);
+					factparameter();
 				}
 				accept(rightpar);
 				break;
 			default:
-				error(322, token);
+				error(322, token); idknextsym();
 				break;
 			}
 		}
@@ -486,25 +594,23 @@ void unmarkedstatement()
 			switch (symbol)
 			{
 			case gotosy:
-				nextsym();
+				accept(gotosy);
 				accept(ident);
 				break;
 			case ifsy:
-				nextsym();
 				ifstatement();
 				break;
 			case beginsy:
-				nextsym();
+				accept(beginsy);
 				statement();
 				while (symbol == semicolon)
 				{
-					nextsym();
+					accept(semicolon);
 					statement();
 				}
 				accept(endsy);
 				break;
 			case casesy:
-				nextsym();
 				casestatement();
 				break;
 			case whilesy:
@@ -520,7 +626,7 @@ void unmarkedstatement()
 				connstatement();
 				break;
 			default:
-				error(322, token);
+				error(322, token); idknextsym();
 				break;
 			}
 		}
@@ -530,20 +636,13 @@ void unmarkedstatement()
 		nextsym();
 	}
 }
-void fparameter()
-{
-	if (symbol == ident)
-		nextsym();
-	else
-		expression();
-}
 void connstatement()
 {
 	accept(withsy);
 	variable();
 	while (symbol == comma)
 	{
-		nextsym();
+		accept(comma);
 		variable();
 	}
 	accept(dosy);
@@ -570,18 +669,51 @@ void expression()
 	if (symbol == equal || symbol == latergreater || symbol == later || symbol == laterequal || symbol == greaterequal ||
 		symbol == greater || symbol == insy)
 	{
-		nextsym();
+		switch (symbol)
+		{
+		case equal:
+			accept(equal);
+			break;
+		case latergreater:
+			accept(latergreater);
+			break;
+		case later:
+			accept(later);
+			break;
+		case laterequal:
+			accept(laterequal);
+			break;
+		case greaterequal:
+			accept(greaterequal);
+			break;
+		case greater:
+			accept(greater);
+			break;
+		case insy:
+			accept(insy);
+			break;
+		}
 		simpleexpression();
 	}
 }
 void simpleexpression()
 {
 	if (symbol == minus || symbol == plus)
-		nextsym();
+	{
+		if (symbol == minus)
+			accept(minus);
+		else
+			accept(plus);
+	}
 	addend();
 	while (symbol == plus || symbol == minus || symbol == orsy)
 	{
-		nextsym();
+		if (symbol == plus)
+			accept(plus);
+		else if (symbol == minus)
+			accept(minus);
+		else
+			accept(orsy);
 		addend();
 	}
 }
@@ -590,7 +722,24 @@ void addend()
 	mult();
 	while (symbol == star || symbol == slash || symbol == divsy || symbol == modsy || symbol == andsy)
 	{
-		nextsym();
+		switch (symbol)
+		{
+		case star:
+			accept(star);
+			break;
+		case slash:
+			accept(slash);
+			break;
+		case divsy:
+			accept(divsy);
+			break;
+		case modsy:
+			accept(modsy);
+			break;
+		case andsy:
+			accept(andsy);
+			break;
+		}
 		mult();
 	}
 }
@@ -599,95 +748,265 @@ void mult()
 	switch (symbol)
 	{
 	case ident:
-		nextsym();
-		if (symbol == leftpar)
+		accept(ident);
+		if (symbol == leftpar || symbol == point || symbol == arrow || symbol == lbracket)
 		{
-			nextsym();
-			if (symbol == ident)
+			switch (symbol)
 			{
-				nextsym();
+			case leftpar:
+				accept(leftpar);
+				factparameter();
 				while (symbol == comma)
 				{
-					nextsym();
-					if (symbol == ident)
-					{
-						nextsym();
-					}
-					else
-					{
-						expression();
-					}
+					accept(comma);
+					factparameter();
 				}
-			}
-			else
-			{
-				expression();
-				while (symbol == comma)
-				{
-					nextsym();
-					if (symbol == ident)
+				accept(rightpar);
+				break;
+			case point:
+				while (symbol == lbracket || symbol == point || symbol == arrow)
+					switch (symbol)
 					{
-						nextsym();
+					case lbracket:
+						accept(lbracket); expression();
+						while (symbol == comma)
+						{
+							accept(comma); expression();
+						}
+						accept(rbracket);
+						break;
+					case point:
+						accept(point); accept(ident);
+						break;
+					case arrow:
+						accept(arrow);
+						break;
 					}
-					else
+				break;
+			case arrow:
+				while (symbol == lbracket || symbol == point || symbol == arrow)
+					switch (symbol)
 					{
-						expression();
+					case lbracket:
+						accept(lbracket); expression();
+						while (symbol == comma)
+						{
+							accept(comma); expression();
+						}
+						accept(rbracket);
+						break;
+					case point:
+						accept(point); accept(ident);
+						break;
+					case arrow:
+						accept(arrow);
+						break;
 					}
-				}
+				break;
+			case lbracket:
+				while (symbol == lbracket || symbol == point || symbol == arrow)
+					switch (symbol)
+					{
+					case lbracket:
+						accept(lbracket); expression();
+						while (symbol == comma)
+						{
+							accept(comma); expression();
+						}
+						accept(rbracket);
+						break;
+					case point:
+						accept(point); accept(ident);
+						break;
+					case arrow:
+						accept(arrow);
+						break;
+					}
+				break;
 			}
-			accept(rightpar);
 		}
 		break;
 	case intc:
 		if (nmb_int >= 0)
 		{
-			nextsym();
-			accept(leftpar);
-			expression();
-			accept(rightpar);
+			accept(intc);
 		}
 		else
 		{
-			error(50, token);
+			error(50, token); idknextsym();
+		}
+		break;
+	case floatc:
+		if (nmb_float >= 0)
+		{
+			accept(floatc);
+		}
+		else
+		{
+			error(50, token); idknextsym();
 		}
 		break;
 	case stringc:
-		nextsym();
-		accept(leftpar);
-		expression();
-		accept(rightpar);
+		accept(stringc);
 		break;
 	case charc:
-		nextsym();
-		accept(leftpar);
-		expression();
-		accept(rightpar);
+		accept(charc);
 		break;
 	case nilsy:
-		nextsym();
-		accept(leftpar);
-		expression();
-		accept(rightpar);
+		accept(nilsy);
 		break;
 	case lbracket:
-		nextsym();
-		expression();
-		if (symbol == twopoints)
-			expression();
-		while (symbol == comma)
+		accept(lbracket);
+		if (symbol != rbracket)
 		{
-			nextsym();
 			expression();
 			if (symbol == twopoints)
 				expression();
+			while (symbol == comma)
+			{
+				accept(comma);
+				expression();
+				if (symbol == twopoints)
+					expression();
+			}
 		}
 		accept(rbracket);
 		break;
 	case notsy:
-		nextsym();
+		accept(notsy);
 		mult();
 		break;
+	case leftpar:
+		accept(leftpar);
+		expression();
+		accept(rightpar);
+		break;
 	default:
-		error(322, token);
+		error(322, token); idknextsym();
 	}
+}
+void constpart()
+{
+	if (symbol == constsy)
+	{
+		accept(constsy);
+		while (symbol == ident)
+		{
+			accept(ident);
+			accept(equal);
+			constant();
+			accept(semicolon);
+		}
+	}
+}
+void typepart()
+{
+	if (symbol == typesy)
+	{
+		accept(typesy);
+		while (symbol == ident)
+		{
+			accept(ident);
+			accept(equal);
+			type();
+			accept(semicolon);
+		}
+	}
+}
+void procfuncpart()
+{
+	while (symbol == proceduresy || symbol == functionsy)
+	{
+		if (symbol == proceduresy)
+		{
+			procedureheader();
+			block();
+		}
+		else
+		{
+			functionheader();
+			block();
+		}
+		accept(semicolon);
+	}
+}
+void procedureheader()
+{
+	accept(proceduresy);
+	accept(ident);
+	if (symbol == leftpar)
+	{
+		accept(leftpar);
+		fparametermodule();
+		while (symbol == semicolon)
+		{
+			accept(semicolon);
+			fparametermodule();
+		}
+		accept(rightpar);
+	}
+	accept(semicolon);
+}
+void functionheader()
+{
+	accept(functionsy);
+	accept(ident);
+	if (symbol == leftpar)
+	{
+		accept(leftpar);
+		fparametermodule();
+		while (symbol == semicolon)
+		{
+			accept(semicolon);
+			fparametermodule();
+		}
+		accept(rightpar);
+	}
+	accept(colon);
+	accept(ident);
+	accept(semicolon);
+}
+void fparametermodule()
+{
+	switch (symbol)
+	{
+	case ident:
+		paramgroup();
+		break;
+	case varsy:
+		accept(varsy);
+		paramgroup();
+		break;
+	case functionsy:
+		accept(functionsy);
+		paramgroup();
+		break;
+	case proceduresy:
+		accept(proceduresy);
+		accept(ident);
+		while (symbol == comma)
+		{
+			accept(comma);
+			accept(ident);
+		}
+		break;
+	default:
+		error(7, token); idknextsym();
+	}
+}
+void paramgroup()
+{
+	accept(ident);
+	while (symbol == comma)
+	{
+		accept(comma);
+		accept(ident);
+	}
+	accept(colon);
+	accept(ident);
+}
+void factparameter()
+{
+	//cout << "fparam\n";
+		expression();
 }

@@ -1,5 +1,6 @@
 ﻿  Translator.cpp
 c:\users\yv\desktop\new\с чистого листа\фгимт\translator1\translator1\inout.h(18): warning C4018: <: несоответствие типов со знаком и без знака
 c:\users\yv\desktop\new\с чистого листа\фгимт\translator1\translator1\inout.h(30): warning C4267: =: преобразование из "size_t" в "short"; возможна потеря данных
+c:\users\yv\desktop\new\с чистого листа\фгимт\translator1\translator1\lexical.h(384): warning C4715: nextsym: значение возвращается не при всех путях выполнения
   Translator1.vcxproj -> C:\Users\YV\Desktop\NEW\С чистого листа\ФГиМТ\Translator1\Debug\Translator1.exe
   Translator1.vcxproj -> C:\Users\YV\Desktop\NEW\С чистого листа\ФГиМТ\Translator1\Debug\Translator1.pdb (Partial PDB)

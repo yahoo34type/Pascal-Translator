@@ -153,6 +153,7 @@
     <ClInclude Include="Lexical.h" />
     <ClInclude Include="Symbols.h" />
     <ClInclude Include="Syntax.h" />
+    <ClInclude Include="Syntaxh.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Translator.cpp" />
