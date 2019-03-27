@@ -13,7 +13,7 @@ const int MAX = 500;
 const int ERRMAX = 5;
 const int maxint = 32767;
 const int MAX_IDENT = 50;
-const char* FILENAME = "C:\\Users\\YV\\Desktop\\NEW\\С чистого листа\\ФГиМТ\\Translator1\\Source7.txt";
+const char* FILENAME = "C:\\Users\\YV\\Desktop\\NEW\\С чистого листа\\ФГиМТ\\Translator1\\Source10.txt";
 const char* FILENAME2 = "C:\\Users\\YV\\Desktop\\NEW\\С чистого листа\\ФГиМТ\\Translator1\\List.txt";
 const char* FILENAME3 = "C:\\Users\\YV\\Desktop\\NEW\\С чистого листа\\ФГиМТ\\Translator1\\ErrList.txt";
 struct textposition
@@ -26,7 +26,7 @@ struct lineErrors
 {
 	struct textposition errorposition;
 	unsigned errorcode;
-} ErrList[ERRMAX];
+} ErrList[ERRMAX+1];
 char ch;						// текущая сканируемая литера
 textposition positionnow;		// текущая позиция
 short LastInLine;				// длина текущей строки

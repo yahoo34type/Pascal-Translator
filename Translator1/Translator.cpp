@@ -3,13 +3,14 @@ void syntax()
 {
 	nextsym();
 	programme();
-	while (positionnow.charnumber != LastInLine)
+	/*while (positionnow.charnumber != LastInLine)
 		nextch();
+	nextch();*/
 }
 void lexic()
 {
 	while (nextsym())
-	cout << symbol << " in position " << token.linenumber << "," << token.charnumber << "\n";
+		cout << symbol << " in position " << token.linenumber << "," << token.charnumber << "\n";
 }
 void main()
 {

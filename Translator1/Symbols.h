@@ -31,6 +31,7 @@
 #define stringc 101 /* строковая константа */
 #define booleanc 102 /* логическая константа */
 #define olcomment 100 /* // */
+#define eofile 134
 /*  список  ключевых  слов  */
 #define   dosy           54
 #define   ifsy           56

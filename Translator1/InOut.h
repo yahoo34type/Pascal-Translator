@@ -4,6 +4,11 @@
 void ListThisLine()
 {
 	OUT << "  " << setw(2) << setfill('0') << positionnow.linenumber << "  ";
+	for (int i = 0; i < LastInLine; i++)
+	{
+		if (line[i] == '\t')
+			line[i] = ' ';
+	}
 	OUT << line << endl;
 }
 void ListErrors()
@@ -44,7 +49,8 @@ bool nextch() // сканирование следующего символа
 		}
 		else
 		{
-			positionnow.charnumber++;
+			if (positionnow.charnumber < LastInLine)
+				positionnow.charnumber++;
 		}
 		ch = line[positionnow.charnumber - 1];
 		return 1;

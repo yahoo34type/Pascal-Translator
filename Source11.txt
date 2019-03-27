@@ -1,0 +1,13 @@
+program example( a, c, v );
+var ***1** a, l :integer;
+    b,f (a , , f);
+    f1, f1:(a1,a2, ,a3) 56;
+    mas1,mas2 :
+    array [(s,d),'d'..d,] integer;
+    f,k :2..6;
+    d, : real;
+    d1,,d2: ; ***
+
+begin
+
+end.
