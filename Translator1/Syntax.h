@@ -742,8 +742,9 @@ void statement(unsigned *followers)
 					}
 				if (symbol == colon)
 				{
-					/*accept(colon);
-					unmarkedstatement();*/
+					accept(colon);
+					statement(followers);
+					cout << "Метки?\n";
 				}
 				else
 				{
@@ -755,11 +756,14 @@ void statement(unsigned *followers)
 						break;
 					case leftpar:
 						accept(leftpar);
-						expression(acodes_factparam);//fp
-						while (symbol == comma)
+						if (symbol != rightpar)
 						{
-							accept(comma);
 							expression(acodes_factparam);//fp
+							while (symbol == comma)
+							{
+								accept(comma);
+								expression(acodes_factparam);//fp
+							}
 						}
 						accept(rightpar);
 						break;
